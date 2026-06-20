@@ -56,7 +56,7 @@ def save_json(data, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
-    print(f"✅ Saved {path}")
+    print(f"Saved {path}")
 
 def save_csv(data, path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -64,7 +64,7 @@ def save_csv(data, path):
         writer = csv.DictWriter(f, fieldnames=data[0].keys())
         writer.writeheader()
         writer.writerows(data)
-    print(f"✅ Saved {path}")
+    print(f"Saved {path}")
 
 if __name__ == "__main__":
     products = generate_products(50)
@@ -81,4 +81,4 @@ if __name__ == "__main__":
     save_csv(products,   "data/csv/products_generated.csv")
     save_csv(flat_orders,"data/csv/orders_generated.csv")
 
-    print("\n🛍️  BarkedShop data generation complete!")
+    print("\nBarkedShop data generation complete!")
