@@ -2,6 +2,8 @@
 
 > A style fashion e-commerce platform.
 
+---
+
 ## Live Platform
 
 | Layer    | URL |
