@@ -60,6 +60,9 @@ window.triggerAddToCart = function(product) {
     addToCart(product);
 };
 
+// Exponer la función de renderizado para asegurar su acceso desde products.js u otras vistas
+window.createProductCard = createProductCard;
+
 // Escuchador común global
 document.addEventListener('DOMContentLoaded', () => {
     updateCartCounter();
@@ -68,8 +71,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchForm) {
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            
             const query = document.getElementById('search-input').value.trim();
-            window.location.href = `/frontend/pages/new.html?q=${encodeURIComponent(query)}`;
+            if (!query) return; // Si la búsqueda está vacía, no hace nada
+
+            // Parche dinámico para corregir rutas relativas (Evita errores 404 al cambiar de página)
+            const isInPagesFolder = window.location.pathname.includes('/pages/');
+            
+            let targetUrl = '';
+            if (isInPagesFolder) {
+                // Si ya estamos dentro de /pages/ (ej: men.html), new.html está en este mismo nivel
+                targetUrl = `new.html?q=${encodeURIComponent(query)}`;
+            } else {
+                // Si estamos en la raíz (index.html), debemos entrar primero a la carpeta pages/
+                targetUrl = `pages/new.html?q=${encodeURIComponent(query)}`;
+            }
+
+            // Ejecuta la redirección correcta
+            window.location.href = targetUrl;
         });
     }
 });
