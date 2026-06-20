@@ -8,3 +8,7 @@ __pycache__/
 *.pyc
 .DS_Store
 __MACOSX
+database/__MACOSX/
+.DS_Store
+__MACOSX/
+database/__MACOSX/
