@@ -1,4 +1,4 @@
-# 🛍️ BarkedShop
+# <img src="https://slackmojis.com/emojis/93340-hawaiian-shirt/download" width="45"/> BarkedShop 
 
 > A style fashion e-commerce platform built as a team project.
 
@@ -142,19 +142,18 @@ The schema is in `database/schema.sql`. Tables:
 
 ---
 
-## 👥 Team Members & Commits
-
-Each team member owns a specific area. Commit your work under your section.
-
-| # | Member | Responsibility | Branch / Files |
-|---|--------|---------------|----------------|
-| 1 | **[Member 1]** | Project Lead & Home Page | `frontend/index.html`, `frontend/css/style.css` |
-| 2 | **[Member 2]** | Product Pages & Cart | `frontend/pages/`, `frontend/js/products.js` |
-| 3 | **[Member 3]** | Backend API & Routes | `backend/api/`, `backend/app.js` |
-| 4 | **[Member 4]** | Database Schema & Data | `database/schema.sql`, `data/` |
-| 5 | **[Member 5]** | Data Generation Scripts | `backend/scripts/generate_data.py` |
-| 6 | **[Member 6]** | CI/CD & DevOps | `.github/workflows/ci.yml`, `package.json`, `README.md` |
-
+## 👥 Team Members
+ 
+| Role | Member |
+|------|--------|
+| 🏆 Product Owner | Diego |
+| ✅ Quality Assurance | Karen |
+| 🔄 Scrum Master | Diego |
+| ⚙️ DevOps | Diego, Elisabet |
+| 🎨 Front-end Developer | Ramiro, Karen, Elisabet |
+| 🔧 Back-end Developer | Brad, Alejandra |
+ 
+---
 ### Commit Guidelines
 
 ```bash
@@ -198,4 +197,4 @@ Sample data is available in three formats:
 
 ---
 
-*BarkedShop — Fashion for Everyone 🛍️*
+*BarkedShop — Fashion for Everyone <img src="https://slackmojis.com/emojis/16075-clothes_rack/download" width="60"/> *
