@@ -2,8 +2,6 @@
 
 > A style fashion e-commerce platform.
 
----
-
 ## Live Platform
 
 | Layer    | URL |
@@ -11,7 +9,6 @@
 | Frontend | `frontend/index.html` (open in browser) |
 | API      | `http://localhost:3000` |
 
----
 
 ## Team Members
 
@@ -24,7 +21,6 @@
 | 🎨 Front-end Developer | Ramiro, Karen, Elisabet |
 | 🔧 Back-end Developer | Brad, Alejandra |
 
----
 
 ## Responsibilities
 
@@ -37,7 +33,6 @@
 | **Brad** | `backend/` — API routes & server logic |
 | **Karen** | `data/`, `package.json` — sample data & project config |
 
----
 
 ## Repository Structure
 
@@ -89,7 +84,6 @@ barkedshop/
 └── README.md
 ```
 
----
 
 ## How to Run Locally
 
@@ -171,6 +165,7 @@ The schema is in `database/schema.sql`. Tables:
 | CI/CD | GitHub Actions |
 | Fonts | Google Fonts (Inter + Playfair Display) |
 
+---
 
 <p align="center">
   <img src="frontend/images/logotipo.png" width="500"/>
