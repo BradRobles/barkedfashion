@@ -1,0 +1,18 @@
+{
+  "name": "barkedshop-api",
+  "version": "1.0.0",
+  "description": "BarkedShop REST API",
+  "main": "backend/app.js",
+  "scripts": {
+    "start": "node backend/app.js",
+    "dev":   "nodemon backend/app.js",
+    "generate-data": "python3 backend/scripts/generate_data.py"
+  },
+  "dependencies": {
+    "cors":    "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

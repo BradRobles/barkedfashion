@@ -1,0 +1,68 @@
+name: BarkedShop CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ── Lint & Test ──────────────────────────────────────────────
+  test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test --if-present
+
+  # ── Validate Data Files ───────────────────────────────────────
+  validate-data:
+    name: Validate Data Files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check JSON validity
+        run: |
+          python3 -c "
+          import json, os, sys
+          files = ['data/json/products.json', 'data/json/users.json', 'data/json/orders.json']
+          for f in files:
+              try:
+                  json.load(open(f))
+                  print(f'✅ {f} is valid JSON')
+              except Exception as e:
+                  print(f'❌ {f}: {e}')
+                  sys.exit(1)
+          "
+
+      - name: Check CSV files exist
+        run: |
+          test -f data/csv/products.csv && echo "✅ products.csv exists"
+          test -f data/csv/orders.csv   && echo "✅ orders.csv exists"
+
+  # ── Deploy (on merge to main) ─────────────────────────────────
+  deploy:
+    name: Deploy Skeleton
+    runs-on: ubuntu-latest
+    needs: [test, validate-data]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy frontend
+        run: echo "🚀 Deploy frontend/ to static host (configure your host here)"
+
+      - name: Deploy API
+        run: echo "🚀 Deploy backend/ to server (configure your host here)"
