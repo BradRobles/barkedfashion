@@ -106,8 +106,12 @@ function sendAnalyticsData() {
     };
 
     // sendBeacon transmite los datos al servidor incluso si el usuario cierra bruscamente la pestaña
+    const baseUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+        ? 'http://localhost:3000/api' 
+        : '/api';
+        
     const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-    navigator.sendBeacon('http://localhost:3000/api/analytics', blob);
+    navigator.sendBeacon(`${baseUrl}/analytics`, blob);
 }
 
 // Inicialización de escuchadores

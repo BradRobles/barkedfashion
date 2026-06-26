@@ -20,7 +20,9 @@ app.use('/api/analytics', require('./api/analytics'))
 // Health check
 app.get('/', (req, res) => res.json({ status: 'BarkedShop API running 🛍️' }));
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`BarkedShop API on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`BarkedShop API on port ${PORT}`));
+}
 
 module.exports = app;

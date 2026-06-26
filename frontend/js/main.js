@@ -1,5 +1,9 @@
-// Configuración global del endpoint del Servidor Express
-const API_BASE_URL = 'http://localhost:3000/api';
+// frontend/js/main.js
+
+// Configuración dinámica del endpoint del Servidor Express
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') 
+    ? 'http://localhost:3000/api' 
+    : '/api';
 
 // Estado global de la Bolsa de Compras
 let cart = JSON.parse(localStorage.getItem('barked_cart')) || [];

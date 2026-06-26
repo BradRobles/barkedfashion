@@ -1,9 +1,7 @@
 // backend/api/products.js
 const express = require('express');
 const router  = express.Router();
-
-// Carga el JSON simulado directamente de tu carpeta de datos
-const products = require('../../data/json/products.json');
+const { sql } = require('@vercel/postgres');
 
 // GET /api/products
 router.get('/', (req, res) => {
