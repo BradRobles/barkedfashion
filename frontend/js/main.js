@@ -4,11 +4,7 @@ const API_BASE_URL = (window.location.hostname === 'localhost' || window.locatio
     ? 'http://localhost:3000/api'
     : '/api';
 
-// ─────────────────────────────────────────────
-// P3: Identificador de usuario persistente
-// Genera un ID único la primera vez y lo guarda
-// en localStorage para detectar visitas recurrentes
-// ─────────────────────────────────────────────
+// ─── P3: Identificador de usuario persistente ───
 function getOrCreateUserId() {
     let userId = localStorage.getItem('barked_user_id');
     if (!userId) {
@@ -17,21 +13,18 @@ function getOrCreateUserId() {
         localStorage.setItem('barked_user_first_visit', new Date().toISOString());
         localStorage.setItem('barked_user_session_count', '1');
     } else {
-        // Usuario recurrente — incrementar contador de sesiones
         const prev = parseInt(localStorage.getItem('barked_user_session_count') || '1');
         localStorage.setItem('barked_user_session_count', String(prev + 1));
     }
     return userId;
 }
 
-const BARKED_USER_ID = getOrCreateUserId();
+const BARKED_USER_ID      = getOrCreateUserId();
 const BARKED_SESSION_COUNT = parseInt(localStorage.getItem('barked_user_session_count') || '1');
-const BARKED_FIRST_VISIT = localStorage.getItem('barked_user_first_visit');
+const BARKED_FIRST_VISIT   = localStorage.getItem('barked_user_first_visit');
 
-// ─────────────────────────────────────────────
-// P2: Favoritos persistentes
-// ─────────────────────────────────────────────
-let favorites = JSON.parse(localStorage.getItem('barked_favorites')) || [];
+// ─── P2: Favoritos ───
+let favorites = JSON.parse(localStorage.getItem('barked_favorites') || '[]');
 
 function saveFavorites() {
     localStorage.setItem('barked_favorites', JSON.stringify(favorites));
@@ -41,32 +34,35 @@ function isFavorite(productId) {
     return favorites.some(f => f.id === productId);
 }
 
-function toggleFavorite(product) {
-    const idx = favorites.findIndex(f => f.id === product.id);
+function toggleFavorite(productId) {
+    const idx = favorites.findIndex(f => f.id === productId);
     if (idx === -1) {
-        favorites.push({ ...product, savedAt: new Date().toISOString() });
+        // Buscar el producto en el DOM por data-id
+        const card = document.querySelector(`.product-card[data-id="${productId}"]`);
+        if (card) {
+            const raw = card.dataset.product;
+            if (raw) favorites.push({ ...JSON.parse(raw), savedAt: new Date().toISOString() });
+        }
         saveFavorites();
-        return true; // agregado
+        if (window._trackFavoriteToggle) window._trackFavoriteToggle(productId, true);
+        return true;
     } else {
         favorites.splice(idx, 1);
         saveFavorites();
-        return false; // removido
+        if (window._trackFavoriteToggle) window._trackFavoriteToggle(productId, false);
+        return false;
     }
 }
 
-window.triggerToggleFavorite = function(productJson, btn) {
-    const product = JSON.parse(productJson);
-    const added = toggleFavorite(product);
+// Handler global — el botón llama a esto con solo el ID
+window.triggerToggleFavorite = function(productId, btn) {
+    const added = toggleFavorite(productId);
     btn.classList.toggle('favorited', added);
     btn.title = added ? 'Quitar de favoritos' : 'Agregar a favoritos';
-    // Notificar a analytics
-    if (window._trackFavoriteToggle) window._trackFavoriteToggle(product.id, added);
 };
 
-// ─────────────────────────────────────────────
-// Carrito
-// ─────────────────────────────────────────────
-let cart = JSON.parse(localStorage.getItem('barked_cart')) || [];
+// ─── Carrito ───
+let cart = JSON.parse(localStorage.getItem('barked_cart') || '[]');
 
 function saveCart() {
     localStorage.setItem('barked_cart', JSON.stringify(cart));
@@ -74,9 +70,9 @@ function saveCart() {
 }
 
 function addToCart(product, quantity = 1) {
-    const existingItem = cart.find(item => item.id === product.id);
-    if (existingItem) {
-        existingItem.quantity += quantity;
+    const existing = cart.find(item => item.id === product.id);
+    if (existing) {
+        existing.quantity += quantity;
     } else {
         cart.push({ ...product, quantity });
     }
@@ -87,14 +83,11 @@ function addToCart(product, quantity = 1) {
 function updateCartCounter() {
     const counter = document.getElementById('cart-counter');
     if (counter) {
-        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-        counter.textContent = total;
+        counter.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
     }
 }
 
-// ─────────────────────────────────────────────
-// Card de producto — ahora incluye botón ❤️
-// ─────────────────────────────────────────────
+// ─── Card de producto ───
 function createProductCard(product) {
     const hasDiscount = product.original_price && product.original_price > product.price;
     const categoryLabel = product.category ? product.category.toUpperCase() : '';
@@ -102,10 +95,14 @@ function createProductCard(product) {
         ? product.image_url
         : `https://placehold.co/300x350?text=${encodeURIComponent(product.name)}`;
     const alreadyFav = isFavorite(product.id);
-    const productJson = JSON.stringify(product).replace(/'/g, '&#39;');
+
+    // Guardar el objeto producto en data-product (escapado para HTML)
+    const productDataAttr = JSON.stringify(product)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;');
 
     return `
-        <div class="product-card" data-id="${product.id}">
+        <div class="product-card" data-id="${product.id}" data-product="${productDataAttr}">
             <div class="product-image">
                 <span class="badge ${product.stock === 0 ? 'out-of-stock' : (hasDiscount ? 'offer' : '')}">
                     ${product.stock === 0 ? 'Agotado' : (hasDiscount ? 'Oferta' : 'Nuevo')}
@@ -113,8 +110,9 @@ function createProductCard(product) {
                 <button
                     class="btn-favorite ${alreadyFav ? 'favorited' : ''}"
                     title="${alreadyFav ? 'Quitar de favoritos' : 'Agregar a favoritos'}"
-                    onclick="window.triggerToggleFavorite('${productJson}', this)">
-                    ♥
+                    data-product-id="${product.id}"
+                    onclick="window.triggerToggleFavorite(${product.id}, this)">
+                    &#9829;
                 </button>
                 <img src="${imageUrl}" alt="${product.name}"
                      onerror="this.src='https://placehold.co/300x350?text=BarkedShop'">
@@ -128,7 +126,7 @@ function createProductCard(product) {
                 </div>
                 <p class="stock-info">${product.stock > 0 ? `Unidades: ${product.stock}` : 'Fuera de Stock'}</p>
                 <button class="btn-add-cart" ${product.stock === 0 ? 'disabled' : ''}
-                    onclick='window.triggerAddToCart(${JSON.stringify(product)})'>
+                    onclick='window.triggerAddToCart(${product.id})'>
                     ${product.stock === 0 ? 'Agotado' : 'Añadir al Carrito'}
                 </button>
             </div>
@@ -136,7 +134,13 @@ function createProductCard(product) {
     `;
 }
 
-window.triggerAddToCart = function(product) { addToCart(product); };
+window.triggerAddToCart = function(productId) {
+    const card = document.querySelector(`.product-card[data-id="${productId}"]`);
+    if (card && card.dataset.product) {
+        addToCart(JSON.parse(card.dataset.product));
+    }
+};
+
 window.createProductCard = createProductCard;
 
 document.addEventListener('DOMContentLoaded', () => {
