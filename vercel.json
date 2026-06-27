@@ -1,6 +1,11 @@
 {
+  "functions": {
+    "backend/app.js": {
+      "includeFiles": "backend/**"
+    }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/backend/app.js" },
-    { "source": "/(.*)", "destination": "/frontend/$1" }
+    { "source": "/(.*)",     "destination": "/frontend/$1" }
   ]
 }
